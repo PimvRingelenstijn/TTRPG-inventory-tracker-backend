@@ -1,16 +1,16 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-import models
-from database import engine, get_db, SessionLocal
+from app.db import engine, get_db, Base, test_connection
+from app.models import System  # Import models to register them with Base.metadata
 from typing import List
 import os
 
 # Create tables (only for development)
 # In production, use Alembic migrations
-async def create_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(models.Base.metadata.create_all)
+def create_tables():
+    """Create all tables in the database"""
+    Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -24,21 +24,14 @@ async def health_check(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-# Example CRUD endpoints
-@app.get("/users")
-async def get_users(db: Session = Depends(get_db)):
-    users = db.query(models.User).all()
-    return users
-
-@app.post("/users")
-async def create_user(email: str, full_name: str, db: Session = Depends(get_db)):
-    user = models.User(email=email, full_name=full_name)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
-
 # Startup event
 @app.on_event("startup")
-async def startup():
-    await create_tables()
+def startup():
+    """Create database tables on startup"""
+    # Test connection first
+    if test_connection():
+        print("Creating database tables...")
+        create_tables()
+        print("✅ Database tables created successfully!")
+    else:
+        print("⚠️  Warning: Database connection failed. Tables may not be created.")
