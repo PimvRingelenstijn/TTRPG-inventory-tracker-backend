@@ -2,9 +2,12 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db import engine, get_db, Base, test_connection
-from app.models import System  # Import models to register them with Base.metadata
+from app.dbmodels import System  # Import dbmodels to register them with Base.metadata
 from typing import List
 import os
+
+from app.routers import SystemRouter
+
 
 # Create tables (only for development)
 # In production, use Alembic migrations
@@ -35,3 +38,6 @@ def startup():
         print("✅ Database tables created successfully!")
     else:
         print("⚠️  Warning: Database connection failed. Tables may not be created.")
+
+system_router_instance = SystemRouter()
+app.include_router(system_router_instance.router, prefix="/system", tags=["systems"])

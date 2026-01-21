@@ -1,0 +1,11 @@
+from app.routers import BaseRouter
+
+class ---Router(BaseRouter):
+    def __init__(self):
+        super().__init__(prefix="/---")
+        self._register_---_routes()
+
+    def _register_---_routes(self):
+        @self.router.get("/---")
+        async def get_---(self):
+            return ---
