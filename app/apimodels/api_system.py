@@ -1,10 +1,13 @@
+from uuid import UUID
 from pydantic import BaseModel
+
 
 class APISystem(BaseModel):
     name: str
     description: str
 
+
 class APISystemResponse(BaseModel):
-    id: int
+    id: UUID
     name: str
     description: str

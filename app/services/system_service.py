@@ -3,10 +3,12 @@ from app.dbmodels import System
 from app.mappers import SystemMapper
 from app.repositories import SystemRepository
 
+
 class SystemService:
-    @staticmethod
-    def add_system(api_system: APISystem) -> APISystemResponse:
-        """Add new system"""
+    def __init__(self, repository: SystemRepository):
+        self.repository = repository
+
+    def add_system(self, api_system: APISystem) -> APISystemResponse:
         system: System = SystemMapper.api_system_to_system(api_system)
-        SystemRepository.add_new_system(system)
-        return SystemMapper.system_to_api_system_response(system)
+        created_system = self.repository.add_new_system(system)
+        return SystemMapper.system_to_api_system_response(created_system)

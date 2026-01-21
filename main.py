@@ -39,5 +39,4 @@ def startup():
     else:
         print("⚠️  Warning: Database connection failed. Tables may not be created.")
 
-system_router_instance = SystemRouter()
-app.include_router(system_router_instance.router, prefix="/system", tags=["systems"])
+app.include_router(SystemRouter.router, prefix="/system", tags=["systems"])
