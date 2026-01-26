@@ -1,17 +1,14 @@
-import uuid
 from typing import Optional, List, Dict, Any
-
-from sqlalchemy import Column, DateTime
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, DateTime, Integer
 from sqlalchemy.sql import func
 from app.db import Base
 
 
-class BaseModel(Base):
+class DBBaseModel(Base):
     """Base model class with common fields"""
     __abstract__ = True
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 

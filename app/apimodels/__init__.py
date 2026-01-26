@@ -1,7 +1,7 @@
-from app.apimodels.api_system import APISystem, APISystemResponse
+from .api_game_system import APIGameSystem, APIGameSystemResponse
 
 __all__ = [
-    "APISystem",
-    "APISystemResponse"
+    "APIGameSystem",
+    "APIGameSystemResponse"
 ]
 

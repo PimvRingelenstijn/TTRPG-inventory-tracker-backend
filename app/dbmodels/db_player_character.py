@@ -1,26 +1,22 @@
-from sqlalchemy import Column, String, Text, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, ForeignKey, Integer
 from sqlalchemy.orm import relationship
-from app.dbmodels.db_base import BaseModel
+from app.dbmodels.db_base import DBBaseModel
 
 
-# In your PlayerCharacter model:
-class PlayerCharacter(BaseModel):
+class DBPlayerCharacter(DBBaseModel):
     __tablename__ = "player_characters"
 
-    user_id = Column(String, nullable=False, index=True)
     name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
-    system_id = Column(UUID(as_uuid=True), ForeignKey("systems.id"), nullable=False)
-    party_id = Column(UUID(as_uuid=True), ForeignKey("parties.id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    game_system_id = Column(Integer, ForeignKey("game_systems.id"), nullable=False)
+    party_id = Column(Integer, ForeignKey("parties.id"), nullable=True)
 
-    # Relationships with explicit foreign_keys
-    system = relationship("System", back_populates="player_characters")
-    party = relationship("Party", back_populates="player_characters")
+    # Relationships (MANY characters belong to ONE system/party)
+    game_system = relationship("DBGameSystem", back_populates="player_characters")
+    party = relationship("DBParty", back_populates="player_characters")
+    user = relationship("DBUser", back_populates="player_character")
 
-    inventory = relationship(
-        "Inventory",
-        back_populates="player_character",
-        uselist=False  # One-to-one relationship
-    )
-    change_logs = relationship("ChangeLog", back_populates="player_character", cascade="all, delete-orphan")
+    # Relationships (ONE character has ONE inventory, MANY change logs)
+    inventory = relationship("DBInventory", back_populates="player_character", uselist=False)
+    change_logs = relationship("DBChangeLog", back_populates="player_character")

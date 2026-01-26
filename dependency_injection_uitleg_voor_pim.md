@@ -23,17 +23,17 @@ De oude code gebruikte `@staticmethod` overal, maar dat werkte niet correct:
 
 ```python
 # OUD - BROKEN CODE
-class SystemService:
+class GameSystemService:
     @staticmethod
-    def add_system(api_system: APISystem) -> APISystemResponse:
-        system = SystemMapper.api_system_to_system(api_system)
-        SystemRepository.add_new_system(system)  # ❌ Dit werkt niet!
-        return SystemMapper.system_to_api_system_response(system)
+    def add_system(api_system: APIGameSystem) -> APIGameSystemResponse:
+        system = GameSystemMapper.api_system_to_system(api_system)
+        GameSystemRepository.add_new_system(system)  # ❌ Dit werkt niet!
+        return GameSystemMapper.game_system_to_api_game_system_response(system)
 ```
 
 **Waarom werkte dit niet?**
 
-`SystemRepository.add_new_system(system)` werd aangeroepen alsof het een static method is, maar `add_new_system` is een **instance method** die een database sessie nodig heeft. Er was geen database connectie beschikbaar!
+`GameSystemRepository.add_new_system(system)` werd aangeroepen alsof het een static method is, maar `add_new_system` is een **instance method** die een database sessie nodig heeft. Er was geen database connectie beschikbaar!
 
 ---
 
@@ -59,7 +59,7 @@ result = Calculator.add(5, 3)  # result = 8
 
 **Wanneer gebruiken?**
 - Pure utility functies die geen state nodig hebben
-- Mappers (zoals `SystemMapper`) - die transformeren alleen data
+- Mappers (zoals `GameSystemMapper`) - die transformeren alleen data
 
 **Wanneer NIET gebruiken?**
 - Als je een database connectie nodig hebt
@@ -112,18 +112,18 @@ Dependency Injection betekent: **geef de dependencies mee in plaats van ze zelf 
 ### Zonder DI (slecht):
 
 ```python
-class SystemService:
+class GameSystemService:
     def add_system(self):
         db = create_database_connection()  # ❌ Service maakt zelf connectie
-        repository = SystemRepository(db)   # ❌ Service maakt zelf repository
+        repository = GameSystemRepository(db)   # ❌ Service maakt zelf repository
         # ...
 ```
 
 ### Met DI (goed):
 
 ```python
-class SystemService:
-    def __init__(self, repository: SystemRepository):
+class GameSystemService:
+    def __init__(self, repository: GameSystemRepository):
         self.repository = repository  # ✅ Repository wordt meegegeven
     
     def add_system(self, api_system):
@@ -152,26 +152,26 @@ def get_db():
     finally:
         db.close()  # Cleanup na de request
 
-def get_system_repository(db: Session = Depends(get_db)) -> SystemRepository:
+def get_system_repository(db: Session = Depends(get_db)) -> GameSystemRepository:
     """Maakt repository met database sessie"""
-    return SystemRepository(db)
+    return GameSystemRepository(db)
 
 def get_system_service(
-    repository: SystemRepository = Depends(get_system_repository)
-) -> SystemService:
+    repository: GameSystemRepository = Depends(get_system_repository)
+) -> GameSystemService:
     """Maakt service met repository"""
-    return SystemService(repository)
+    return GameSystemService(repository)
 ```
 
 ### Stap 2: Gebruik in router
 
 ```python
-# app/routers/system_router.py
+# app/routers/game_system_router.py
 
 @router.post("/add-system")
 def post_add_system(
-    api_system: APISystem,
-    service: SystemService = Depends(get_system_service)  # FastAPI injecteert dit!
+    api_system: APIGameSystem,
+    service: GameSystemService = Depends(get_system_service)  # FastAPI injecteert dit!
 ):
     return service.add_system(api_system)
 ```
@@ -194,10 +194,10 @@ def post_add_system(
    → yield db (geeft sessie terug, wacht op cleanup)
 
 6. get_system_repository() ontvangt db
-   → return SystemRepository(db)
+   → return GameSystemRepository(db)
 
 7. get_system_service() ontvangt repository
-   → return SystemService(repository)
+   → return GameSystemService(repository)
 
 8. post_add_system() ontvangt service
    → Voert logica uit
@@ -236,42 +236,44 @@ Dit is vergelijkbaar met Spring's `@Transactional` of Java's try-with-resources.
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.db import get_db
-from app.repositories import SystemRepository
-from app.services import SystemService
+from app.repositories import GameSystemRepository
+from app.services import GameSystemService
 
 
-def get_system_repository(db: Session = Depends(get_db)) -> SystemRepository:
-    return SystemRepository(db)
+def get_system_repository(db: Session = Depends(get_db)) -> GameSystemRepository:
+    return GameSystemRepository(db)
 
 
 def get_system_service(
-    repository: SystemRepository = Depends(get_system_repository)
-) -> SystemService:
-    return SystemService(repository)
+        repository: GameSystemRepository = Depends(get_system_repository)
+) -> GameSystemService:
+    return GameSystemService(repository)
 ```
 
 ### 2. Aangepast: `app/services/system_service.py`
 
 **Oud:**
+
 ```python
-class SystemService:
+class GameSystemService:
     @staticmethod
-    def add_system(api_system: APISystem) -> APISystemResponse:
-        system = SystemMapper.api_system_to_system(api_system)
-        SystemRepository.add_new_system(system)  # ❌ Broken
-        return SystemMapper.system_to_api_system_response(system)
+    def add_system(api_system: APIGameSystem) -> APIGameSystemResponse:
+        system = GameSystemMapper.api_system_to_system(api_system)
+        GameSystemRepository.add_new_system(system)  # ❌ Broken
+        return GameSystemMapper.game_system_to_api_game_system_response(system)
 ```
 
 **Nieuw:**
+
 ```python
-class SystemService:
-    def __init__(self, repository: SystemRepository):
+class GameSystemService:
+    def __init__(self, repository: GameSystemRepository):
         self.repository = repository
-    
-    def add_system(self, api_system: APISystem) -> APISystemResponse:
-        system = SystemMapper.api_system_to_system(api_system)
+
+    def add_system(self, api_system: APIGameSystem) -> APIGameSystemResponse:
+        system = GameSystemMapper.api_system_to_system(api_system)
         created_system = self.repository.add_new_system(system)  # ✅ Werkt!
-        return SystemMapper.system_to_api_system_response(created_system)
+        return GameSystemMapper.game_system_to_api_game_system_response(created_system)
 ```
 
 ### 3. Aangepast: `app/routers/system_router.py`
@@ -282,9 +284,9 @@ class SystemRouter:
     router = APIRouter()
 
     @staticmethod
-    @router.post("/add-system", response_model=APISystemResponse)
-    def post_add_system(api_system: APISystem):
-        return SystemService.add_system(api_system)  # ❌ Static call
+    @router.post("/add-system", response_model=APIGameSystemResponse)
+    def post_add_system(api_system: APIGameSystem):
+        return GameSystemService.add_system(api_system)  # ❌ Static call
 ```
 
 **Nieuw:**
@@ -292,10 +294,10 @@ class SystemRouter:
 class SystemRouter:
     router = APIRouter()
 
-    @router.post("/add-system", response_model=APISystemResponse)
+    @router.post("/add-system", response_model=APIGameSystemResponse)
     def post_add_system(
-        api_system: APISystem,
-        service: SystemService = Depends(get_system_service)  # ✅ Injected
+        api_system: APIGameSystem,
+        service: GameSystemService = Depends(get_system_service)  # ✅ Injected
     ):
         return service.add_system(api_system)
 ```
@@ -332,11 +334,11 @@ Als je Spring Boot gewend bent, hier de vergelijking:
 
 ```java
 @Service
-public class SystemService {
-    private final SystemRepository repository;
+public class GameSystemService {
+    private final GameSystemRepository repository;
     
     // Spring injecteert automatisch
-    public SystemService(SystemRepository repository) {
+    public GameSystemService(GameSystemRepository repository) {
         this.repository = repository;
     }
 }
@@ -346,15 +348,15 @@ public class SystemService {
 
 ```python
 # De service class
-class SystemService:
-    def __init__(self, repository: SystemRepository):
+class GameSystemService:
+    def __init__(self, repository: GameSystemRepository):
         self.repository = repository
 
 # De dependency functie (dit is wat Spring automatisch doet)
 def get_system_service(
-    repository: SystemRepository = Depends(get_system_repository)
-) -> SystemService:
-    return SystemService(repository)
+    repository: GameSystemRepository = Depends(get_system_repository)
+) -> GameSystemService:
+    return GameSystemService(repository)
 ```
 
 **Het verschil:** In Spring Boot is DI "magisch" (automatisch). In FastAPI is het **expliciet** — jij schrijft de functies die dependencies maken. Dit is bewust zo ontworpen: "Explicit is better than implicit" (Python filosofie).
@@ -370,14 +372,14 @@ Je kunt makkelijk mock objects injecteren voor tests:
 ```python
 def test_add_system():
     # Maak een mock repository
-    mock_repo = Mock(spec=SystemRepository)
+    mock_repo = Mock(spec=GameSystemRepository)
     mock_repo.add_new_system.return_value = System(id=1, name="Test")
     
     # Injecteer de mock
-    service = SystemService(mock_repo)
+    service = GameSystemService(mock_repo)
     
     # Test
-    result = service.add_system(APISystem(name="Test", description="Test"))
+    result = service.add_system(APIGameSystem(name="Test", description="Test"))
     
     # Verify
     mock_repo.add_new_system.assert_called_once()
@@ -414,8 +416,8 @@ Je ziet direct wat een functie nodig heeft:
 
 ```python
 def post_add_system(
-    api_system: APISystem,
-    service: SystemService = Depends(get_system_service)  # ← Duidelijk!
+    api_system: APIGameSystem,
+    service: GameSystemService = Depends(get_system_service)  # ← Duidelijk!
 ):
 ```
 
@@ -426,16 +428,16 @@ def post_add_system(
 `@staticmethod` is prima voor **pure functies** zonder side effects:
 
 ```python
-class SystemMapper:
+class GameSystemMapper:
     @staticmethod
-    def api_system_to_system(api_system: APISystem) -> System:
+    def api_system_to_system(api_system: APIGameSystem) -> System:
         # Pure transformatie, geen database, geen state
         return System(name=api_system.name, description=api_system.description)
     
     @staticmethod
-    def system_to_api_system_response(system: System) -> APISystemResponse:
+    def system_to_api_system_response(system: System) -> APIGameSystemResponse:
         # Pure transformatie
-        return APISystemResponse(
+        return APIGameSystemResponse(
             id=system.id,
             name=system.name,
             description=system.description

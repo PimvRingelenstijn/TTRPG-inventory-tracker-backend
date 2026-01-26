@@ -1,15 +1,13 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session
-from app.dbmodels import System
+from app.dbmodels import DBGameSystem
 from app.repositories import BaseRepository
 
 
-class SystemRepository(BaseRepository[System]):
+class GameSystemRepository(BaseRepository[DBGameSystem]):
     """Repository for System model with additional system-specific methods"""
     
     def __init__(self, db: Session):
-        super().__init__(System, db)
+        super().__init__(DBGameSystem, db)
 
-    def add_new_system(self, system: System) -> System:
-        return self.create(system.to_dict())
 

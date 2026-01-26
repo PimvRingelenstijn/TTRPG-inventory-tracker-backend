@@ -1,5 +1,5 @@
-from .system_mapper import SystemMapper
+from .game_system_mapper import GameSystemMapper
 
 __all__ = [
-    "SystemMapper"
+    "GameSystemMapper"
 ]

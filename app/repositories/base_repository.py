@@ -1,8 +1,8 @@
 from typing import Generic, TypeVar, Type, Optional, List, Dict, Any
 from sqlalchemy.orm import Session
-from app.dbmodels import BaseModel
+from app.dbmodels import DBBaseModel
 
-ModelType = TypeVar("ModelType", bound=BaseModel)
+ModelType = TypeVar("ModelType", bound=DBBaseModel)
 
 
 class BaseRepository(Generic[ModelType]):

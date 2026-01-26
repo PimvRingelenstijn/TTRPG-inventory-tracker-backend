@@ -2,11 +2,25 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db import engine, get_db, Base, test_connection
-from app.dbmodels import System  # Import dbmodels to register them with Base.metadata
-from typing import List
-import os
+from app.routers import GameSystemRouter
 
-from app.routers import SystemRouter
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# CORS configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",  # Vite default port
+        "http://localhost:3000",  # Alternative React port
+        "http://127.0.0.1:5173",  # Sometimes localhost resolves to 127.0.0.1
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 
 # Create tables (only for development)
@@ -14,8 +28,6 @@ from app.routers import SystemRouter
 def create_tables():
     """Create all tables in the database"""
     Base.metadata.create_all(bind=engine)
-
-app = FastAPI()
 
 # Health check endpoint
 @app.get("/health")
@@ -39,4 +51,4 @@ def startup():
     else:
         print("⚠️  Warning: Database connection failed. Tables may not be created.")
 
-app.include_router(SystemRouter.router, prefix="/system", tags=["systems"])
+app.include_router(GameSystemRouter.router, prefix="/game-systems", tags=["game_systems"])

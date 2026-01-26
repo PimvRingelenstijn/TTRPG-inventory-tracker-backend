@@ -1,5 +1,5 @@
-from .system_service import SystemService
+from .game_system_service import GameSystemService
 
 __all__ = [
-    "SystemService"
+    "GameSystemService"
 ]

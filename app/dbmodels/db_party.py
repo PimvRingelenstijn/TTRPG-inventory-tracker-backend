@@ -1,18 +1,19 @@
-from sqlalchemy import Column, String, Text, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, ForeignKey, Integer
 from sqlalchemy.orm import relationship
-from app.dbmodels.db_base import BaseModel
+from app.dbmodels.db_base import DBBaseModel
 
 
-class Party(BaseModel):
+class DBParty(DBBaseModel):
     __tablename__ = "parties"
 
-    # Inherited columns: id, created_at, updated_at
     name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
-    system_id = Column(UUID(as_uuid=True), ForeignKey("systems.id"), nullable=False)
+    game_system_id = Column(Integer, ForeignKey("game_systems.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    # Relationships
-    system = relationship("System", back_populates="parties")
-    player_characters = relationship("PlayerCharacter", back_populates="party", cascade="all, delete-orphan")
-    item_templates = relationship("ItemTemplate", back_populates="party", cascade="all, delete-orphan")
+    # Relationships (MANY parties belong to ONE system)
+    game_system = relationship("DBGameSystem", back_populates="parties")
+
+    # Relationships (ONE party has MANY of these)
+    player_characters = relationship("DBPlayerCharacter", back_populates="party", cascade="all, delete-orphan")
+    item_templates = relationship("DBItemTemplate", back_populates="party", cascade="all, delete-orphan")

@@ -1,5 +1,5 @@
-from .system_router import SystemRouter
+from .game_system_router import GameSystemRouter
 
 __all__ = [
-    "SystemRouter"
+    "GameSystemRouter"
 ]

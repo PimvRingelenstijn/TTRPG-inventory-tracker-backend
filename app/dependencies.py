@@ -1,15 +1,14 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.db import get_db
-from app.repositories import SystemRepository
-from app.services import SystemService
+from app.repositories import GameSystemRepository
+from app.services import GameSystemService
 
 
-def get_system_repository(db: Session = Depends(get_db)) -> SystemRepository:
-    return SystemRepository(db)
+def get_game_system_repository(db: Session = Depends(get_db)) -> GameSystemRepository:
+    return GameSystemRepository(db)
 
-
-def get_system_service(
-    repository: SystemRepository = Depends(get_system_repository)
-) -> SystemService:
-    return SystemService(repository)
+def get_game_system_service(
+    repository: GameSystemRepository = Depends(get_game_system_repository)
+) -> GameSystemService:
+    return GameSystemService(repository)
