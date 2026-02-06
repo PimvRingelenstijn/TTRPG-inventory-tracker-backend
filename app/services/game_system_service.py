@@ -1,24 +1,23 @@
 from typing import List
-
 from app.apimodels import APIGameSystem, APIGameSystemResponse
 from app.dbmodels import DBGameSystem
-from app.mappers import GameSystemMapper
+from app.mappers import api_game_system_to_db_model, db_game_system_to_api_response
 from app.repositories import GameSystemRepository
-
 
 class GameSystemService:
     def __init__(self, repository: GameSystemRepository):
         self.repository = repository
 
-    def add_game_system(self, api_system: APIGameSystem) -> APIGameSystemResponse:
-        system: DBGameSystem = GameSystemMapper.api_game_system_to_db_game_system(api_system)
-        created_system = self.repository.create(system.to_dict())
-        return GameSystemMapper.game_system_to_api_game_system_response(created_system)
+    def add_game_system(self, api_game_system: APIGameSystem) -> APIGameSystemResponse:
+        game_system: DBGameSystem = api_game_system_to_db_model(api_game_system)
+        created_game_system = self.repository.create(game_system.to_dict())
+        return db_game_system_to_api_response(created_game_system)
 
     def get_all_game_systems(self) -> List[APIGameSystemResponse]:
-        systems = self.repository.get_all()
-        return [GameSystemMapper.game_system_to_api_game_system_response(system) for system in systems]
+        game_systems = self.repository.get_all()
+        return [db_game_system_to_api_response(game_system) for game_system in game_systems]
 
-    def get_game_system_by_id(self, system_id: int) -> APIGameSystemResponse:
-        system = self.repository.get(id = system_id)
-        return GameSystemMapper.game_system_to_api_game_system_response(system)
+    def get_game_system_by_id(self, game_system_id: int) -> APIGameSystemResponse:
+        game_system = self.repository.get_id(id_value=game_system_id)
+        return db_game_system_to_api_response(game_system)
+

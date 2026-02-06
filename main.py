@@ -1,10 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db import engine, get_db, Base, test_connection
-from app.routers import GameSystemRouter
-
-from fastapi.middleware.cors import CORSMiddleware
+from app.routers import game_system_router, user_router, auth_router
 
 app = FastAPI()
 
@@ -47,8 +46,26 @@ def startup():
     if test_connection():
         print("Creating database tables...")
         create_tables()
-        print("✅ Database tables created successfully!")
+        print("Database tables created successfully!")
     else:
-        print("⚠️  Warning: Database connection failed. Tables may not be created.")
+        print("Warning: Database connection failed. Tables may not be created.")
 
-app.include_router(GameSystemRouter.router, prefix="/game-systems", tags=["game_systems"])
+# Include routers below
+app.include_router(
+    auth_router,
+    prefix="/auth",
+    tags=["authentication"]
+)
+
+app.include_router(
+    game_system_router,
+    prefix="/game-systems",
+    tags=["game_systems"]
+)
+
+app.include_router(
+    user_router,
+    prefix="/users",
+    tags=["users"]
+)
+

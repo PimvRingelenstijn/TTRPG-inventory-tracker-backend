@@ -4,7 +4,6 @@ from app.dbmodels import DBBaseModel
 
 ModelType = TypeVar("ModelType", bound=DBBaseModel)
 
-
 class BaseRepository(Generic[ModelType]):
     """Base repository class with common CRUD operations"""
     
@@ -12,9 +11,9 @@ class BaseRepository(Generic[ModelType]):
         self.model = model
         self.db = db
     
-    def get(self, id: int) -> Optional[ModelType]:
+    def get_id(self, id_value: int) -> Optional[ModelType]:
         """Get a single record by ID"""
-        return self.db.query(self.model).filter(self.model.id == id).first()
+        return self.db.query(self.model).filter(self.model.id == id_value).first()
     
     def get_all(self, skip: int = 0, limit: int = 100) -> List[ModelType]:
         """Get all records with pagination"""
