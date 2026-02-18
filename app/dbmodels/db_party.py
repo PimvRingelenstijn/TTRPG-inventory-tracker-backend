@@ -6,11 +6,12 @@ from app.dbmodels.db_base import DBBaseModel
 class DBParty(DBBaseModel):
     __tablename__ = "parties"
 
-    # inherits id: int (pk), created_at: datetime, updated_at: datetime
+    # inherits created_at: datetime, updated_at: datetime
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     game_system_id = Column(Integer, ForeignKey("game_systems.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_uuid = Column(String, ForeignKey("users.uuid"), nullable=False)
 
 
     # # Relationships (MANY parties belong to ONE system)

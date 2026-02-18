@@ -1,6 +1,6 @@
 from .api_game_system import APIGameSystem, APIGameSystemResponse
 from .api_user import AuthUser, APIUserResponse
-from .api_auth import UserRegistration, UserLogin
+from .api_auth import UserRegistration, UserLogin, LoginResponse, LoginUserInfo
 
 __all__ = [
     "APIGameSystem",
@@ -8,6 +8,8 @@ __all__ = [
     "AuthUser",
     "APIUserResponse",
     "UserRegistration",
-    "UserLogin"
+    "UserLogin",
+    "LoginResponse",
+    "LoginUserInfo"
 ]
 

@@ -14,13 +14,6 @@ HOST = os.getenv("HOST")
 PORT = os.getenv("PORT")
 DBNAME = os.getenv("DBNAME")
 
-# # Debug: Add this to see what's being read
-# print(f"DEBUG - USER: {USER}")
-# print(f"DEBUG - PASSWORD: {PASSWORD}")
-# print(f"DEBUG - HOST: {HOST}")
-# print(f"DEBUG - PORT: {PORT}")
-# print(f"DEBUG - DBNAME: {DBNAME}")
-
 # Construct the SQLAlchemy connection string for Supabase
 DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require"
 

@@ -6,7 +6,8 @@ from app.dbmodels.db_base import DBBaseModel
 class DBInventoryItem(DBBaseModel):
     __tablename__ = "inventory_items"
 
-    # inherits id: int (pk), created_at: datetime, updated_at: datetime
+    # inherits created_at: datetime, updated_at: datetime
+    id = Column(Integer, primary_key=True, index=True)
     inventory_id = Column(Integer, ForeignKey("inventories.id"), nullable=False)
     item_template_id = Column(Integer, ForeignKey("item_templates.id"), nullable=False)
     quantity = Column(Integer, default=1)

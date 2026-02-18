@@ -1,9 +1,9 @@
 from fastapi import HTTPException, status
 from supabase import Client
 from supabase_auth import AuthResponse
-from app.apimodels import UserRegistration, UserLogin
+from app.apimodels import UserRegistration, UserLogin, LoginResponse, LoginUserInfo
 from app.dbmodels import DBUser
-from app.mappers import new_user_to_db_user
+from app.mappers import new_user_to_db_user, login_request_to_login_response, user_data_to_user_info
 from app.repositories import UserRepository
 
 
@@ -38,11 +38,13 @@ class AuthService:
                 "email": login_data.email,
                 "password": login_data.password
             })
+            user_data: DBUser = self.repository.get_uuid(auth_response.user.id)
 
-            return {
-                "user": auth_response.user.model_dump(),
-                "session": auth_response.session.model_dump()
-            }
+            login_user_info: LoginUserInfo = user_data_to_user_info(auth_response, user_data)
+
+            login_response: LoginResponse = login_request_to_login_response(auth_response, login_user_info)
+
+            return login_response
 
         except Exception:
             raise HTTPException(
@@ -50,18 +52,20 @@ class AuthService:
                 detail="Invalid credentials"
             )
 
-    def get_current_user(self, token: str):
-        """Validate JWT and get current user"""
+    def get_user_from_token(self, access_token: str):
+        """Validate access token and return user info"""
         try:
-            self.client.auth.set_session(token, "")
-            user = self.client.auth.get_user()
-            return user.user.dict() if user else None
-        except:
+            # Set the token and get user info from Supabase
+            self.client.auth.set_session(access_token, "")
+            user_response = self.client.auth.get_user()
+
+            if user_response and user_response.user:
+                return {
+                    "id": user_response.user.id,
+                    "email": user_response.user.email,
+                    # Add any other user fields you need
+                }
+            return None
+        except Exception:
             return None
 
-    # def logout_user(self) -> bool:
-    #     try:
-    #         self.client.auth.sign_out()
-    #         return True
-    #     except:
-    #         return False

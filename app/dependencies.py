@@ -37,6 +37,7 @@ get_user_service = get_service(UserService, UserRepository)
 #get_player_character_service = get_service(PlayerCharacterService, PlayerCharacterRepository)
 
 """"Dependency injection flow to connect to Supabase Auth"""
+from fastapi import Request
 from supabase import Client
 from app.clients import get_supabase_client
 from app.services import AuthService
@@ -50,14 +51,23 @@ def get_auth_service(
 
 # Dependency to get current user (for protected routes)
 def get_current_user(
-        token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login")),
+        request: Request,  # Access to cookies
         auth_service: AuthService = Depends(get_auth_service)
-)-> Dict[str, Any]:
-    user = auth_service.get_current_user(token)
+):
+    """Get current user from access_token cookie"""
+    access_token = request.cookies.get("access_token")
+
+    if not access_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    # Use Supabase to validate token
+    user = auth_service.get_user_from_token(access_token)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"}
+            detail="Invalid token"
         )
     return user

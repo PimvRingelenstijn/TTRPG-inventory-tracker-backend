@@ -6,11 +6,12 @@ from app.dbmodels.db_base import DBBaseModel
 class DBInventory(DBBaseModel):
     __tablename__ = "inventories"
 
-    # inherits id: int (pk), created_at: datetime, updated_at: datetime
+    # inherits created_at: datetime, updated_at: datetime
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=True)
     player_character_id = Column(Integer, ForeignKey("player_characters.id"), nullable=True)
     party_id = Column(Integer, ForeignKey("parties.id"), nullable=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    user_uuid = Column(String, ForeignKey("users.uuid"), nullable=True)
 
     # # Relationships
     # player_character = relationship(

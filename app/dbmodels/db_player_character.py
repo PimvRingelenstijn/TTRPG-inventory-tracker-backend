@@ -6,10 +6,11 @@ from app.dbmodels.db_base import DBBaseModel
 class DBPlayerCharacter(DBBaseModel):
     __tablename__ = "player_characters"
 
-    # inherits id: int (pk), created_at: datetime, updated_at: datetime
+    # inherits created_at: datetime, updated_at: datetime
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_uuid = Column(String, ForeignKey("users.uuid"), nullable=False)
     game_system_id = Column(Integer, ForeignKey("game_systems.id"), nullable=True)
     party_id = Column(Integer, ForeignKey("parties.id"), nullable=True)
 

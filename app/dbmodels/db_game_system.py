@@ -6,10 +6,11 @@ from app.dbmodels.db_base import DBBaseModel
 class DBGameSystem(DBBaseModel):
     __tablename__ = "game_systems"
 
-    # inherits id: int (pk), created_at: datetime, updated_at: datetime
+    # inherits created_at: datetime, updated_at: datetime
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(Text, nullable=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    user_uuid = Column(String, ForeignKey("users.uuid"), nullable=True)
 
     # # Relationships (ONE system has MANY of these)
     # parties = relationship("DBParty", back_populates="game_system", cascade="all, delete-orphan")

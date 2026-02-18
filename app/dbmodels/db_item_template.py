@@ -7,7 +7,8 @@ from app.dbmodels.db_base import DBBaseModel
 class DBItemTemplate(DBBaseModel):
     __tablename__ = "item_templates"
 
-    # inherits id: int (pk), created_at: datetime, updated_at: datetime
+    # inherits created_at: datetime, updated_at: datetime
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     weight = Column(Numeric(precision=10, scale=2), nullable=True)
@@ -19,6 +20,7 @@ class DBItemTemplate(DBBaseModel):
     game_system_id = Column(Integer, ForeignKey("game_systems.id"), nullable=False)
     party_id = Column(Integer, ForeignKey("parties.id"), nullable=True)
     player_character_id = Column(Integer, ForeignKey("player_characters.id"), nullable=True)
+    user_uuid = Column(String, ForeignKey("users.uuid"), nullable=False)
 
     # # Relationships
     # game_system = relationship("DBGameSystem", back_populates="item_templates")

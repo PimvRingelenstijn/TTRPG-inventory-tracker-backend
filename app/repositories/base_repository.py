@@ -11,10 +11,6 @@ class BaseRepository(Generic[ModelType]):
         self.model = model
         self.db = db
     
-    def get_id(self, id_value: int) -> Optional[ModelType]:
-        """Get a single record by ID"""
-        return self.db.query(self.model).filter(self.model.id == id_value).first()
-    
     def get_all(self, skip: int = 0, limit: int = 100) -> List[ModelType]:
         """Get all records with pagination"""
         return self.db.query(self.model).offset(skip).limit(limit).all()

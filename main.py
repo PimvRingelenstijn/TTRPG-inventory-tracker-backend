@@ -2,10 +2,28 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from contextlib import asynccontextmanager
 from app.db import engine, get_db, Base, test_connection
-from app.routers import game_system_router, user_router, auth_router
+from app.routers import game_system_router, user_router, auth_router, profile_router
 
-app = FastAPI()
+# Lifespan event handler
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup logic
+    print("Starting up...")
+    # Test connection first
+    if test_connection():
+        print("Creating database tables...")
+        Base.metadata.create_all(bind=engine)
+        print("Database tables created successfully!")
+    else:
+        print("Warning: Database connection failed. Tables may not be created.")
+    yield
+    # Shutdown logic (if any)
+    print("Shutting down...")
+
+
+app = FastAPI(lifespan=lifespan)
 
 # CORS configuration
 app.add_middleware(
@@ -38,18 +56,6 @@ async def health_check(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-# Startup event
-@app.on_event("startup")
-def startup():
-    """Create database tables on startup"""
-    # Test connection first
-    if test_connection():
-        print("Creating database tables...")
-        create_tables()
-        print("Database tables created successfully!")
-    else:
-        print("Warning: Database connection failed. Tables may not be created.")
-
 # Include routers below
 app.include_router(
     auth_router,
@@ -69,3 +75,8 @@ app.include_router(
     tags=["users"]
 )
 
+app.include_router(
+    profile_router,
+    prefix="/profile",
+    tags=["profile"]
+)

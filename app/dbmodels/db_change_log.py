@@ -6,8 +6,9 @@ from app.dbmodels.db_base import DBBaseModel
 class DBChangeLog(DBBaseModel):
     __tablename__ = "change_logs"
 
-    # inherits id: int (pk), created_at: datetime, updated_at: datetime
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    # inherits created_at: datetime, updated_at: datetime
+    id = Column(Integer, primary_key=True, index=True)
+    user_uuid = Column(String, ForeignKey("users.uuid"), nullable=False, index=True)
     player_character_id = Column(Integer, ForeignKey("player_characters.id"), nullable=True)
     inventory_id = Column(Integer, ForeignKey("inventories.id"), nullable=True)
     inventory_item_id = Column(Integer, ForeignKey("inventory_items.id"), nullable=True)
