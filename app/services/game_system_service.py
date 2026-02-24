@@ -1,5 +1,5 @@
 from typing import List
-from app.apimodels import APIGameSystem, APIGameSystemResponse
+from app.dtos import APIGameSystem, APIGameSystemResponse
 from app.dbmodels import DBGameSystem
 from app.mappers import api_game_system_to_db_model, db_game_system_to_api_response
 from app.repositories import GameSystemRepository

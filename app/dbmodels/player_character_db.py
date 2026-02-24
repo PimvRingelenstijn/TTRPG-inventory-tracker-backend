@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Text, ForeignKey, Integer
 from sqlalchemy.orm import relationship
-from app.dbmodels.db_base import DBBaseModel
+from app.dbmodels.base_db import DBBaseModel
 
 
 class DBPlayerCharacter(DBBaseModel):

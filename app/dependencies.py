@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import Dict, Any, Type, TypeVar
 from sqlalchemy.orm import Session
 from app.db import get_db
+from app.dtos import UserDataResponse
 from app.repositories import GameSystemRepository, UserRepository
 from app.services import GameSystemService, UserService
 
@@ -45,12 +46,12 @@ from app.services import AuthService
 # Authentication service dependency
 def get_auth_service(
         supabase_client: Client = Depends(get_supabase_client),
-        user_repository: UserRepository = Depends(get_repository(repo_type = UserRepository))
+        user_repository: UserRepository = Depends(get_repository(repo_type=UserRepository))
 ) -> AuthService:
     return AuthService(supabase_client, user_repository)
 
 # Dependency to get current user (for protected routes)
-def get_current_user(
+def get_user_data(
         request: Request,  # Access to cookies
         auth_service: AuthService = Depends(get_auth_service)
 ):
@@ -64,10 +65,10 @@ def get_current_user(
         )
 
     # Use Supabase to validate token
-    user = auth_service.get_user_from_token(access_token)
-    if not user:
+    user_data: UserDataResponse = auth_service.get_user_data_from_token(access_token)
+    if not user_data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token"
         )
-    return user
+    return user_data

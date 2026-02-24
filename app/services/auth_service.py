@@ -1,9 +1,9 @@
 from fastapi import HTTPException, status
 from supabase import Client
 from supabase_auth import AuthResponse
-from app.apimodels import UserRegistration, UserLogin, LoginResponse, LoginUserInfo
+from app.dtos import RegistrationRequest, LoginRequest, LoginResult, UserDataResponse
 from app.dbmodels import DBUser
-from app.mappers import new_user_to_db_user, login_request_to_login_response, user_data_to_user_info
+from app.mappers import new_user_to_db_user, map_to_login_request, map_to_user_data_response
 from app.repositories import UserRepository
 
 
@@ -12,7 +12,7 @@ class AuthService:
         self.client = supabase_client
         self.repository = user_repository
 
-    def register_user(self, user_data: UserRegistration):
+    def register_user(self, user_data: RegistrationRequest):
         try:
             # create user in Supabase Auth
             auth_response: AuthResponse = self.client.auth.sign_up({
@@ -32,17 +32,17 @@ class AuthService:
                 detail=f"Registration failed: {str(e)}"
             )
 
-    def login_user(self, login_data: UserLogin):
+    def login_user(self, login_data: LoginRequest):
         try:
             auth_response: AuthResponse = self.client.auth.sign_in_with_password({
                 "email": login_data.email,
                 "password": login_data.password
             })
-            user_data: DBUser = self.repository.get_uuid(auth_response.user.id)
+            db_user_data: DBUser = self.repository.get_uuid(auth_response.user.id)
 
-            login_user_info: LoginUserInfo = user_data_to_user_info(auth_response, user_data)
+            user_data_response: UserDataResponse = map_to_user_data_response(auth_response.user, db_user_data)
 
-            login_response: LoginResponse = login_request_to_login_response(auth_response, login_user_info)
+            login_response: LoginResult = map_to_login_request(auth_response, user_data_response)
 
             return login_response
 
@@ -52,20 +52,16 @@ class AuthService:
                 detail="Invalid credentials"
             )
 
-    def get_user_from_token(self, access_token: str):
+    def get_user_data_from_token(self, access_token: str):
         """Validate access token and return user info"""
-        try:
-            # Set the token and get user info from Supabase
-            self.client.auth.set_session(access_token, "")
-            user_response = self.client.auth.get_user()
+        # Set the token and get user info from Supabase
+        self.client.auth.set_session(access_token, "")
+        auth_user = self.client.auth.get_user()
 
-            if user_response and user_response.user:
-                return {
-                    "id": user_response.user.id,
-                    "email": user_response.user.email,
-                    # Add any other user fields you need
-                }
-            return None
-        except Exception:
-            return None
+        db_user_data: DBUser = self.repository.get_uuid(auth_user.user.id)
+
+        user_data_response: UserDataResponse = map_to_user_data_response(auth_user.user, db_user_data)
+
+        return user_data_response
+
 

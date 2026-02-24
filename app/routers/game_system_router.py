@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from typing import List
-from app.apimodels import APIGameSystem, APIGameSystemResponse
+from app.dtos import APIGameSystem, APIGameSystemResponse
 from app.services import GameSystemService
 from app.dependencies import get_game_system_service
 

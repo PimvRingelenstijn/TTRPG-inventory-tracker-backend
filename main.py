@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from contextlib import asynccontextmanager
 from app.db import engine, get_db, Base, test_connection
-from app.routers import game_system_router, user_router, auth_router, profile_router
+from app.routers import game_system_router, auth_router, profile_router
 
 # Lifespan event handler
 @asynccontextmanager
@@ -67,16 +67,4 @@ app.include_router(
     game_system_router,
     prefix="/game-systems",
     tags=["game_systems"]
-)
-
-app.include_router(
-    user_router,
-    prefix="/users",
-    tags=["users"]
-)
-
-app.include_router(
-    profile_router,
-    prefix="/profile",
-    tags=["profile"]
 )

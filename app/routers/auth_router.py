@@ -1,11 +1,8 @@
 from fastapi import APIRouter, Depends, status, Response
 from fastapi.security import HTTPBearer
-from typing import Dict, Any
 
-from starlette.responses import Response
-
-from app.apimodels import UserRegistration, UserLogin, LoginResponse
-from app.dependencies import get_auth_service, get_current_user
+from app.dtos import RegistrationRequest, LoginRequest, LoginResult, UserDataResponse
+from app.dependencies import get_auth_service, get_user_data
 from app.services import AuthService
 from app.utils import set_cookies
 
@@ -14,26 +11,26 @@ security = HTTPBearer()
 
 @auth_router.post("/register", status_code=status.HTTP_201_CREATED)
 def register_user(
-        user_data: UserRegistration,
+        user_data: RegistrationRequest,
         auth_service: AuthService = Depends(get_auth_service)
 ):
     return auth_service.register_user(user_data)
 
-@auth_router.post("/login")
+@auth_router.post("/login", response_model=UserDataResponse)
 def login_user(
-        login_data: UserLogin,
+        login_data: LoginRequest,
         response: Response,
         auth_service: AuthService = Depends(get_auth_service)
 ):
     #temporary return all AuthResponse data
-    login_response: LoginResponse = auth_service.login_user(login_data)
+    login_result: LoginResult = auth_service.login_user(login_data)
     set_cookies(
-        access_token=login_response.access_token,
-        expires=login_response.expires,
+        access_token=login_result.access_token,
+        expires=login_result.expires,
         response=response
     )
 
-    return login_response.userinfo
+    return login_result.user_info
 
 @auth_router.post("/logout")
 def logout_user(response: Response):
@@ -41,8 +38,8 @@ def logout_user(response: Response):
     response.delete_cookie(key="access_token")
     return {"message": "Successfully logged out"}
 
-@auth_router.get("/me")
-def get_current_user_profile(
-        current_user: Dict[str, Any] = Depends(get_current_user)
+@auth_router.get("/me", response_model=UserDataResponse)
+def get_user_data(
+        user_data: UserDataResponse = Depends(get_user_data)
 ):
-    return {"user": current_user}
+    return user_data

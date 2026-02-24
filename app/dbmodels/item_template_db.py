@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Text, ForeignKey, Numeric, Integer, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
-from app.dbmodels.db_base import DBBaseModel
+from app.dbmodels.base_db import DBBaseModel
 
 
 class DBItemTemplate(DBBaseModel):

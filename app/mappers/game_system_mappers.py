@@ -1,4 +1,4 @@
-from app.apimodels import APIGameSystem, APIGameSystemResponse
+from app.dtos import APIGameSystem, APIGameSystemResponse
 from app.dbmodels import DBGameSystem
 
 def api_game_system_to_db_model(api_game_system: APIGameSystem) -> DBGameSystem:

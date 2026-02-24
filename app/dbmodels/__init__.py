@@ -1,12 +1,12 @@
-from .db_base import DBBaseModel
-from .db_game_system import DBGameSystem
-from .db_party import DBParty
-from .db_item_template import DBItemTemplate
-from .db_inventory import DBInventory
-from .db_player_character import DBPlayerCharacter
-from .db_inventory_item import DBInventoryItem
-from .db_change_log import DBChangeLog
-from .db_user import DBUser
+from .base_db import DBBaseModel
+from .game_system_db import DBGameSystem
+from .party_db import DBParty
+from .item_template_db import DBItemTemplate
+from .inventory_db import DBInventory
+from .player_character_db import DBPlayerCharacter
+from .inventory_item_db import DBInventoryItem
+from .change_log_db import DBChangeLog
+from .user_db import DBUser
 
 __all__ = [
     "DBBaseModel",
