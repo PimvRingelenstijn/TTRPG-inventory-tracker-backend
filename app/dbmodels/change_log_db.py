@@ -1,5 +1,8 @@
-from sqlalchemy import Column, String, Text, ForeignKey, Integer
+# Third-party imports
+from sqlalchemy import Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+
+# Local imports
 from app.dbmodels.base_db import DBBaseModel
 
 

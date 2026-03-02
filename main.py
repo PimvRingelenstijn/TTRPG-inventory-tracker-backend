@@ -1,27 +1,53 @@
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from sqlalchemy import text
+# Standard library imports
+import os
 from contextlib import asynccontextmanager
-from app.db import engine, get_db, Base, test_connection
-from app.routers import game_system_router, auth_router, profile_router
+
+# Third-party imports
+from dotenv import load_dotenv
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from supabase import create_client
+
+load_dotenv() # Load variables in .env
+
+# Local imports
+import config
+from app.routers import auth_router, game_system_router
+from db import Base, engine, test_connection
+
 
 # Lifespan event handler
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup logic
+    # === STARTUP ===
     print("Starting up...")
-    # Test connection first
+
+    # Test database connection
     if test_connection():
         print("Creating database tables...")
         Base.metadata.create_all(bind=engine)
         print("Database tables created successfully!")
     else:
         print("Warning: Database connection failed. Tables may not be created.")
-    yield
-    # Shutdown logic (if any)
-    print("Shutting down...")
 
+    # Initialize Supabase client
+    print("Initializing Supabase client...")
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
+
+    if not supabase_url or not supabase_key:
+        print("ERROR: SUPABASE_URL and SUPABASE_SERVICE_KEY must be set in .env")
+    else:
+        config.supabase_client = create_client(supabase_url, supabase_key)
+        print("Supabase client initialized successfully!")
+
+    yield
+
+    # === SHUTDOWN ===
+    print("Shutting down...")
+    if config.supabase_client:
+        config.supabase_client = None
+        print("Supabase client cleaned up")
 
 app = FastAPI(lifespan=lifespan)
 
@@ -38,23 +64,6 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
 )
-
-
-# Create tables (only for development)
-# In production, use Alembic migrations
-def create_tables():
-    """Create all tables in the database"""
-    Base.metadata.create_all(bind=engine)
-
-# Health check endpoint
-@app.get("/health")
-async def health_check(db: Session = Depends(get_db)):
-    try:
-        # Test database connection
-        db.execute(text("SELECT 1"))
-        return {"status": "healthy", "database": "connected"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 # Include routers below
 app.include_router(

@@ -1,6 +1,9 @@
-from sqlalchemy import Column, String, Text, ForeignKey, Numeric, Integer, Boolean
+# Third-party imports
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
+
+# Local imports
 from app.dbmodels.base_db import DBBaseModel
 
 

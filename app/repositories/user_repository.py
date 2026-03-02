@@ -1,5 +1,10 @@
+# Standard library imports
 from typing import Optional
+
+# Third-party imports
 from sqlalchemy.orm import Session
+
+# Local imports
 from app.dbmodels import DBUser
 from app.repositories import BaseRepository
 

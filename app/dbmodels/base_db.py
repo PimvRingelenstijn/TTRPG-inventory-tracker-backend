@@ -1,7 +1,12 @@
-from typing import Optional, List, Dict, Any
-from sqlalchemy import Column, DateTime, Integer
+# Standard library imports
+from typing import Any, Dict, List, Optional
+
+# Third-party imports
+from sqlalchemy import Column, DateTime
 from sqlalchemy.sql import func
-from app.db import Base
+
+# Local imports
+from db import Base
 
 
 class DBBaseModel(Base):

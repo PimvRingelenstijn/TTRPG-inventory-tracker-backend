@@ -1,7 +1,13 @@
+# Standard library imports
+from datetime import UTC, datetime
+
+# Third-party imports
 from supabase_auth import AuthResponse, User
-from app.dtos import LoginResult, UserDataResponse
+
+# Local imports
 from app.dbmodels import DBUser
-from datetime import datetime, UTC
+from app.dtos import LoginResult, UserDataResponse
+
 
 def map_to_login_request(auth_response: AuthResponse, user_data: UserDataResponse) -> LoginResult:
 

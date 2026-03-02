@@ -1,6 +1,11 @@
-from pydantic import BaseModel, EmailStr
+# Standard library imports
 from datetime import datetime
+
+# Third-party imports
+from pydantic import BaseModel, EmailStr
+
 from .user_dtos import UserDataResponse
+
 
 # ======== Request DTOs ========
 #    {?Type}{Purpose}Request

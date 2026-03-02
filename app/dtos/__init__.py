@@ -1,10 +1,10 @@
-from .game_system_dtos import APIGameSystem, APIGameSystemResponse
-from .auth_dtos import RegistrationRequest, LoginRequest, LoginResult
+from .auth_dtos import LoginRequest, LoginResult, RegistrationRequest
+from .game_system_dtos import GameSystemCreateRequest, GameSystemDataResponse
 from .user_dtos import UserDataResponse
 
 __all__ = [
-    "APIGameSystem",
-    "APIGameSystemResponse",
+    "GameSystemCreateRequest",
+    "GameSystemDataResponse",
     "RegistrationRequest",
     "LoginRequest",
     "LoginResult",

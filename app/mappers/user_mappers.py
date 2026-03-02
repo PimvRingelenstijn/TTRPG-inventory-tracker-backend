@@ -1,6 +1,9 @@
+# Third-party imports
 from supabase_auth import AuthResponse
-from app.dtos import RegistrationRequest
+
+# Local imports
 from app.dbmodels import DBUser
+from app.dtos import RegistrationRequest
 
 
 def new_user_to_db_user(user_data: RegistrationRequest, auth_response: AuthResponse) -> DBUser:

@@ -1,13 +1,13 @@
-from fastapi import APIRouter, Depends, status, Response
-from fastapi.security import HTTPBearer
+# Third-party imports
+from fastapi import APIRouter, Depends, Response, status
 
-from app.dtos import RegistrationRequest, LoginRequest, LoginResult, UserDataResponse
-from app.dependencies import get_auth_service, get_user_data
+# Local imports
+from app.dtos import LoginRequest, LoginResult, RegistrationRequest, UserDataResponse
 from app.services import AuthService
 from app.utils import set_cookies
+from dependencies import get_auth_service
 
 auth_router = APIRouter()
-security = HTTPBearer()
 
 @auth_router.post("/register", status_code=status.HTTP_201_CREATED)
 def register_user(
@@ -40,6 +40,6 @@ def logout_user(response: Response):
 
 @auth_router.get("/me", response_model=UserDataResponse)
 def get_user_data(
-        user_data: UserDataResponse = Depends(get_user_data)
+        auth_service: AuthService = Depends(get_auth_service)
 ):
-    return user_data
+    pass

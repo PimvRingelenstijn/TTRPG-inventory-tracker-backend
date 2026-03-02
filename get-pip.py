@@ -20,6 +20,7 @@
 # If you're wondering how this is created, it is generated using
 # `scripts/generate.py` in https://github.com/pypa/get-pip.
 
+# Standard library imports
 import sys
 
 this_python = sys.version_info[:2]
@@ -34,12 +35,13 @@ if this_python < min_version:
     sys.exit(1)
 
 
+# Standard library imports
+import argparse
+import importlib
 import os.path
 import pkgutil
 import shutil
 import tempfile
-import argparse
-import importlib
 from base64 import b85decode
 
 
@@ -91,6 +93,7 @@ def monkeypatch_for_cert(tmpdir):
     A monkeypatch is the easiest way to achieve this, without messing too much with
     the rest of pip's internals.
     """
+    # Third-party imports
     from pip._internal.commands.install import InstallCommand
 
     # We want to be using the internal certificates.
@@ -114,6 +117,7 @@ def bootstrap(tmpdir):
 
     # Execute the included pip and use it to install the latest pip and
     # any user-requested packages from PyPI.
+    # Third-party imports
     from pip._internal.cli.main import main as pip_entry_point
     args = determine_pip_install_arguments()
     sys.exit(pip_entry_point(args))

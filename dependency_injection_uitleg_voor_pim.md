@@ -235,7 +235,7 @@ Dit is vergelijkbaar met Spring's `@Transactional` of Java's try-with-resources.
 ```python
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from app.db import get_db
+from db import get_db
 from app.repositories import GameSystemRepository
 from app.services import GameSystemService
 

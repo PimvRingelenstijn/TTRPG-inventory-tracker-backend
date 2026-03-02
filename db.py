@@ -1,11 +1,11 @@
+# Standard library imports
+import os
+
+# Third-party imports
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # Fetch Supabase connection variables
 USER = os.getenv("USER")

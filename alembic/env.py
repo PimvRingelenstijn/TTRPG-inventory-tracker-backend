@@ -1,6 +1,10 @@
+# Standard library imports
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+
+# Third-party imports
+from sqlalchemy import engine_from_config, pool
+
+# Local imports
 from alembic import context
 
 # this is the Alembic Config object, which provides
@@ -12,10 +16,13 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+# Local imports
+from app.dbmodels import System  # Import all dbmodels to register them
+
 # add your model's MetaData object here
 # for 'autogenerate' support
-from app.db import Base
-from app.dbmodels import System  # Import all dbmodels to register them
+from db import Base
+
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
