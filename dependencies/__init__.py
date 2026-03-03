@@ -5,15 +5,13 @@ This package provides:
 - auth.py: Supabase authentication dependencies
 """
 
-from .auth import (
-    get_auth_service,
-)
-from .service import get_protected_game_system_service, get_public_game_system_service
+from .service import get_game_system_service, get_auth_service
+from .auth import get_authenticated_user
 
 __all__ = [
-    # From repository.py
-    "get_public_game_system_service",
-    "get_protected_game_system_service",
-    # From auth.py
+    # From services.py
+    "get_game_system_service",
     "get_auth_service",
+    # From auth.py
+    "get_authenticated_user"
 ]

@@ -12,23 +12,9 @@ ModelType = TypeVar("ModelType", bound=DBBaseModel)
 class BaseRepository(Generic[ModelType]):
     """Base repository class with common CRUD operations"""
     
-    def __init__(self, model: Type[ModelType], db: Session, user_uuid: Optional[str] = None):
+    def __init__(self, model: Type[ModelType], db: Session):
         self.model = model
         self.db = db
-        self.user_uuid = user_uuid
-
-    def _apply_user_filter(self, query):
-        """Apply user filter if user_uuid is set"""
-        if self.user_uuid:
-            return query.filter(self.model.user_uuid == self.user_uuid)
-        return query
-
-    def _inject_user_context(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        if self.user_uuid and hasattr(self.model, 'user_uuid'):
-            if 'user_uuid' not in data:
-                data = {**data, 'user_uuid': self.user_uuid}
-        return data
-
     
     def get_all(self, skip: int = 0, limit: int = 100) -> List[ModelType]:
         """Get all records with pagination"""

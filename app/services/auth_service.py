@@ -1,7 +1,7 @@
 # Third-party imports
 from fastapi import HTTPException, status
 from supabase import Client
-from supabase_auth import AuthResponse
+from supabase_auth import AuthResponse, User
 
 # Local imports
 from app.dbmodels import DBUser
@@ -80,39 +80,9 @@ class AuthService:
                 detail="Invalid credentials"
             )
 
-    def get_user_data_from_token(self, access_token: str):
-        """Validate access token and return user info"""
-        # Set the token and get user info from Supabase
-        self.client.auth.set_session(access_token, "")
-        auth_user = self.client.auth.get_user()
-
-        db_user_data: DBUser = self.repository.get_uuid(auth_user.user.id)
-
-        user_data_response: UserDataResponse = map_to_user_data_response(auth_user.user, db_user_data)
+    def get_user_data(self, user: User) -> UserDataResponse:
+        """Get and return required user data"""
+        db_user_data: DBUser = self.repository.get_uuid(user.id)
+        user_data_response: UserDataResponse = map_to_user_data_response(user, db_user_data)
 
         return user_data_response
-
-
-
-# # Dependency to get current user (for protected routes)
-# def get_user_data(
-#         request: Request,  # Access to cookies
-#         auth_service: AuthService = Depends(get_auth_service)
-# ):
-#     """Get current user from access_token cookie"""
-#     access_token = request.cookies.get("access_token")
-#
-#     if not access_token:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Not authenticated"
-#         )
-#
-#     # Use Supabase to validate token
-#     user_data: UserDataResponse = auth_service.get_user_data_from_token(access_token)
-#     if not user_data:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Invalid token"
-#         )
-#     return user_data

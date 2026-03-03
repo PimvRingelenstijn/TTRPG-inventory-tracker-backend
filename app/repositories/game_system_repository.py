@@ -12,8 +12,8 @@ from app.repositories import BaseRepository
 class GameSystemRepository(BaseRepository[DBGameSystem]):
     """Repository for Game-System model with additional game-system-specific methods"""
     
-    def __init__(self, db: Session, user_uuid: Optional[str] = None):
-        super().__init__(DBGameSystem, db, user_uuid)
+    def __init__(self, db: Session):
+        super().__init__(DBGameSystem, db)
 
     def get_id(self, id_value: int) -> Optional[DBGameSystem]:
         """Get a single record by ID"""

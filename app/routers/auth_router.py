@@ -1,11 +1,12 @@
 # Third-party imports
 from fastapi import APIRouter, Depends, Response, status
+from supabase_auth import User
 
 # Local imports
 from app.dtos import LoginRequest, LoginResult, RegistrationRequest, UserDataResponse
 from app.services import AuthService
 from app.utils import set_cookies
-from dependencies import get_auth_service
+from dependencies import get_auth_service, get_authenticated_user
 
 auth_router = APIRouter()
 
@@ -40,6 +41,7 @@ def logout_user(response: Response):
 
 @auth_router.get("/me", response_model=UserDataResponse)
 def get_user_data(
+        user: User = Depends(get_authenticated_user),
         auth_service: AuthService = Depends(get_auth_service)
 ):
-    pass
+    return auth_service.get_user_data(user)
