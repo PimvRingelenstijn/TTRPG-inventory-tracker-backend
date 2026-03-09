@@ -68,7 +68,7 @@ app.add_middleware(
 # Include routers below
 app.include_router(
     auth_router,
-    prefix="/auth",
+    prefix="/mappers",
     tags=["authentication"]
 )
 

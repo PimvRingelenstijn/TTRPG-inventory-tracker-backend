@@ -245,7 +245,7 @@ mock_client.auth.sign_up.return_value = MagicMock(
 mock_client.auth.sign_up.side_effect = Exception("Auth failed")
 
 # Now when called, it will raise:
-# mock_client.auth.sign_up(...)  -> raises Exception("Auth failed")
+# mock_client.mappers.sign_up(...)  -> raises Exception("Auth failed")
 ```
 
 ---

@@ -9,7 +9,7 @@ from app.dtos import LoginRequest, LoginResult, RegistrationRequest, UserDataRes
 from app.mappers import (
     map_to_login_request,
     map_to_user_data_response,
-    new_user_to_db_user,
+    map_to_new_db_user,
 )
 from app.repositories import UserRepository
 
@@ -19,16 +19,16 @@ class AuthService:
         self.client = supabase_client
         self.repository = user_repository
 
-    def register_user(self, user_data: RegistrationRequest) -> dict:
+    def register_user(self, registration_data: RegistrationRequest) -> dict:
         try:
             # create user in Supabase Auth
             auth_response: AuthResponse = self.client.auth.sign_up({
-                "email": user_data.email,
-                "password": user_data.password
+                "email": registration_data.email,
+                "password": registration_data.password
             })
 
             # store additional user data in your database
-            new_user: DBUser = new_user_to_db_user(user_data, auth_response)
+            new_user: DBUser = map_to_new_db_user(registration_data, auth_response.user)
             self.repository.create(new_user.to_dict())
 
             return {"Message": "User registered successfully!"}
@@ -38,26 +38,6 @@ class AuthService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Registration failed: {str(e)}"
             )
-
-        # @Testt
-        # def testFunctie():
-        #     # Arrange
-        #     registration_request: RegistrationRequest = RegistrationRequest("a@b.nl", "rens", "rens")
-        #     auth_response: AuthResponse = AuthResponse()
-        #     auth_client: AuthClient = Mock(SomeAuthClient)
-        #     when(auth_client.sign_up(registration_request.email, registration_request.password)).thenReturn(auth_response)
-        #     when(repo_mock.create).doNothing()
-        #
-        #     # Act
-        #     response: dict = service.register_user(registration_request)
-        #
-        #     # Assert
-        #     expected_response = {"Message": "User registered successfully!"}
-        #     assert(expected_response, response)
-
-
-
-
 
 
     def login_user(self, login_data: LoginRequest):
@@ -70,14 +50,14 @@ class AuthService:
 
             user_data_response: UserDataResponse = map_to_user_data_response(auth_response.user, db_user_data)
 
-            login_response: LoginResult = map_to_login_request(auth_response, user_data_response)
+            login_response: LoginResult = map_to_login_request(auth_response.session, user_data_response)
 
             return login_response
 
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials"
+                detail=f"Invalid credentials"
             )
 
     def get_user_data(self, user: User) -> UserDataResponse:

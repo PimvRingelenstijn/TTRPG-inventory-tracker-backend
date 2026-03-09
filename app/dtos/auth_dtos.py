@@ -24,7 +24,7 @@ class LoginRequest(BaseModel):
 
 class LoginResult(BaseModel):
     access_token: str
-    expires: datetime
+    expires_at: datetime
     user_info: UserDataResponse
 
 

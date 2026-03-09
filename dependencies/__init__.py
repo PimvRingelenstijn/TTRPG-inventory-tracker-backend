@@ -2,7 +2,7 @@
 
 This package provides:
 - repository.py: Database repository and service dependencies
-- auth.py: Supabase authentication dependencies
+- mappers.py: Supabase authentication dependencies
 """
 
 from .service import get_game_system_service, get_auth_service
@@ -12,6 +12,6 @@ __all__ = [
     # From services.py
     "get_game_system_service",
     "get_auth_service",
-    # From auth.py
+    # From mappers.py
     "get_authenticated_user"
 ]
