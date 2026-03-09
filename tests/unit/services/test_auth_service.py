@@ -74,7 +74,7 @@ class TestRegisterUser:
     ):
         mock_supabase_client.auth.sign_up.return_value = mock_auth_response
 
-        mocker.patch("app.services.auth_service.map_to_new_db_user")
+        mock_mapper = mocker.patch("app.services.auth_service.map_to_new_db_user")
         mocker.patch("app.dbmodels.DBUser.to_dict", return_value={"key": "value"})
 
         result = valid_auth_service.register_user(sample_registration_data)
@@ -84,6 +84,7 @@ class TestRegisterUser:
             "email": "test@email.com",
             "password": "test_password"
         })
+        mock_mapper.assert_called_once_with(sample_registration_data, mock_auth_response.user)
         mock_user_repository.create.assert_called_once()
 
     def test_registration_fails_when_supabase_raises_error(
@@ -151,9 +152,9 @@ class TestLoginUser:
         mock_user_data_response = mocker.Mock()
         mock_login_result = mocker.Mock()
 
-        mocker.patch("app.services.auth_service.map_to_user_data_response",
+        mock_user_mapper = mocker.patch("app.services.auth_service.map_to_user_data_response",
                      return_value=mock_user_data_response)
-        mocker.patch("app.services.auth_service.map_to_login_request",
+        mock_login_mapper = mocker.patch("app.services.auth_service.map_to_login_request",
                      return_value=mock_login_result)
 
         result = valid_auth_service.login_user(sample_login_request)
@@ -164,6 +165,8 @@ class TestLoginUser:
             "password": "test_password"
         })
         mock_user_repository.get_uuid.assert_called_once_with("test-user-uuid")
+        mock_user_mapper.assert_called_once_with(mock_auth_response.user, valid_db_user)
+        mock_login_mapper.assert_called_once_with(mock_auth_response.session, mock_user_data_response)
 
     def test_login_with_invalid_credentials_returns_401(
             self,

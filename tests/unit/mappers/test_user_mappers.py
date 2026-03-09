@@ -59,25 +59,5 @@ class TestNewDBUserMapper:
         assert 'id' in error_msg
         assert 'nonetype' in error_msg
 
-    # def test_missing_id_raises_validation_error(self, sample_registration_data, mock_auth_user):
-    #     mock_auth_user.id = None
-    #
-    #     result = map_to_new_db_user(registration_data=sample_registration_data, auth_user=mock_auth_user)
-    #     print(result.to_dict())
-    #     #exception_assert_helper(exc_info)
 
-
-    # def test_missing_username_raises_validation_error(self, sample_registration_data, mock_auth_user):
-    #     sample_registration_data.username = None
-    #
-    #     result = map_to_new_db_user(registration_data=sample_registration_data, auth_user=mock_auth_user)
-    #     print(result.to_dict())
-    #     #exception_assert_helper(exc_info)
-
-    # def test_missing_created_at_raises_validation_response(self, sample_registration_data, mock_auth_user):
-    #     mock_auth_user.created_at = None
-    #
-    #     result = map_to_new_db_user(registration_data=sample_registration_data, auth_user=mock_auth_user)
-    #     print(result.to_dict())
-    #     #exception_assert_helper(exc_info)
 
