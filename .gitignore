@@ -4,3 +4,4 @@
 __pycache__/
 alembic/versions/*
 !alembic/versions/.gitkeep
+cookies.txt
