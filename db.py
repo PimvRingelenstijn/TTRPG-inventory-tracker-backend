@@ -18,9 +18,6 @@ DBNAME = os.getenv("DBNAME")
 DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require"
 
 # Create SQLAlchemy engine
-# Note: If using Supabase Transaction Pooler or Session Pooler, use NullPool
-# to disable SQLAlchemy client-side pooling (recommended for Supabase)
-# For direct connection, you can use default pooling settings
 engine = create_engine(
     DATABASE_URL,
     poolclass=NullPool,  # Use NullPool for Supabase connection pooling

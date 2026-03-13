@@ -9,6 +9,6 @@ class DBUser(DBBaseModel):
     __tablename__ = "users"
 
     # inherits created_at: datetime, updated_at: datetime
-    uuid = Column(String, primary_key=True)
+    uuid = Column(String, primary_key=True, nullable=False)
     username = Column(String, nullable=False)
 

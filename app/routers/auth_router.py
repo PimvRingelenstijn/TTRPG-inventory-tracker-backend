@@ -27,7 +27,7 @@ def login_user(
     login_result: LoginResult = auth_service.login_user(login_data)
     set_cookies(
         access_token=login_result.access_token,
-        expires=login_result.expires,
+        expires=login_result.expires_at,
         response=response
     )
 

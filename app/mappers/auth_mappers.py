@@ -2,21 +2,21 @@
 from datetime import UTC, datetime
 
 # Third-party imports
-from supabase_auth import AuthResponse, User
+from supabase_auth import Session, User
 
 # Local imports
 from app.dbmodels import DBUser
 from app.dtos import LoginResult, UserDataResponse
 
 
-def map_to_login_request(auth_response: AuthResponse, user_data: UserDataResponse) -> LoginResult:
+def map_to_login_request(auth_session: Session, user_data_response: UserDataResponse) -> LoginResult:
 
-    expires_datetime = datetime.fromtimestamp(auth_response.session.expires_at, tz=UTC)
+    expires_datetime = datetime.fromtimestamp(auth_session.expires_at, tz=UTC)
 
     return LoginResult(
-        access_token=auth_response.session.access_token,
-        expires=expires_datetime,
-        user_info=user_data
+        access_token=auth_session.access_token,
+        expires_at=expires_datetime,
+        user_info=user_data_response
     )
 
 def map_to_user_data_response(auth_user: User, db_user_data: DBUser) -> UserDataResponse:
